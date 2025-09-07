@@ -6,6 +6,7 @@ class App {
     this.settings = {};
     this.currentFolder = 'programming';
     this.editingPromptId = null;
+    this.editingFolderId = null;
     this.searchQuery = '';
   }
 
@@ -229,7 +230,12 @@ class App {
   openFolderModal(mode, parentFolderId = null) {
     this.editingFolderId = null;
     this.folderMode = mode;
-    UI.openFolderModal(mode, parentFolderId, this.folders);
+    UI.openFolderModal(
+      mode,
+      parentFolderId,
+      this.folders,
+      this.editingFolderId
+    );
   }
 
   saveFolder() {
@@ -240,21 +246,53 @@ class App {
         throw new Error('Folder name is required!');
       }
 
-      const newFolders = FolderManager.createFolder(this.folders, formData);
-      this.folders = newFolders;
+      let newFolders;
+      if (this.editingFolderId) {
+        // Edit existing folder
+        newFolders = FolderManager.editFolder(
+          this.folders,
+          this.editingFolderId,
+          formData
+        );
+      } else {
+        // Create new folder
+        newFolders = FolderManager.createFolder(this.folders, formData);
+      }
 
+      this.folders = newFolders;
       this.saveData();
       this.renderFolders();
       UI.closeFolderModal();
-      UI.showToast('Folder created!');
+      UI.showToast(
+        this.editingFolderId ? 'Folder updated!' : 'Folder created!'
+      );
+
+      this.editingFolderId = null;
     } catch (error) {
       alert(error.message);
     }
   }
 
   editFolder(folderId) {
-    // Placeholder - folder editing not yet implemented
-    alert(`Edit folder: ${folderId}`);
+    const folder = this.folders[folderId];
+    if (!folder) return;
+
+    // Prevent editing system folders
+    const systemFolders = [
+      'favorites',
+      'programming',
+      'business',
+      'personal',
+      'creative',
+      'research',
+    ];
+    if (systemFolders.includes(folderId)) {
+      UI.showToast('System folders cannot be edited!');
+      return;
+    }
+
+    this.editingFolderId = folderId;
+    UI.openFolderModal('edit', null, this.folders, folderId);
   }
 
   importPrompts() {
