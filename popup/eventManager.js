@@ -317,8 +317,8 @@ class EventManager {
           e.stopPropagation();
           this.emit('promptActionRequested', { action: 'delete', promptId });
         } else if (target.closest('.prompt-item')) {
-          // Click on prompt item itself (could be used for preview/selection)
-          this.emit('promptActionRequested', { action: 'select', promptId });
+          // Click on prompt item itself - copy the prompt content
+          this.emit('promptActionRequested', { action: 'copy', promptId });
         }
       };
 
