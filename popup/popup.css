@@ -78,7 +78,7 @@ body {
 /* Sidebar */
 .sidebar {
   width: 220px;
-  background: #fff;
+  background: #f8f9fa;
   border-right: 1px solid #e1e5e9;
   overflow-y: auto;
 }
@@ -91,14 +91,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: 8px 12px;
   cursor: pointer;
   user-select: none;
   font-size: 13px;
   position: relative;
   min-height: 36px;
+  margin: 1px 4px;
   border-radius: 4px;
-  margin: 1px 0;
+  transition: background-color 0.2s;
 }
 
 .folder-item:hover {
@@ -182,11 +183,13 @@ body {
 }
 
 .subfolder-list {
-  margin-left: 20px;
+  margin-left: 16px;
+  padding-left: 8px;
+  margin-top: 2px;
 }
 
 .subfolder-item {
-  padding: 8px 8px;
+  padding: 6px 8px;
   cursor: pointer;
   font-size: 12px;
   color: #666;
@@ -196,8 +199,9 @@ body {
   align-items: center;
   justify-content: space-between;
   min-height: 32px;
-  border-radius: 4px;
   margin: 1px 0;
+  border-radius: 3px;
+  transition: background-color 0.2s;
 }
 
 .subfolder-item:hover {
@@ -259,12 +263,14 @@ body {
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid #e1e5e9;
+  background: #fff;
 }
 
 .content-header h3 {
   font-size: 16px;
   font-weight: 500;
   color: #333;
+  margin: 0;
 }
 
 .header-actions {
@@ -304,7 +310,7 @@ body {
 .prompt-list {
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: 12px;
 }
 
 .prompt-item {
@@ -314,20 +320,19 @@ body {
   padding: 12px;
   margin-bottom: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: border-color 0.2s;
   position: relative;
 }
 
 .prompt-item:hover {
   border-color: #1a73e8;
-  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.1);
 }
 
 .prompt-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .prompt-title {
@@ -354,9 +359,14 @@ body {
   border: none;
   background: none;
   cursor: pointer;
-  padding: 2px;
-  border-radius: 2px;
+  padding: 4px;
+  border-radius: 3px;
   font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
 }
 
 .action-btn:hover {
@@ -364,13 +374,12 @@ body {
 }
 
 .favorite-btn.active {
-  color: #ffa000;
+  color: #ff6f00;
 }
 
 .copy-btn {
   background: #e8f0fe;
   color: #1a73e8;
-  padding: 4px 6px;
 }
 
 .copy-btn:hover {
@@ -388,6 +397,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  margin-top: 6px;
 }
 
 .tag {
