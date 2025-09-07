@@ -569,8 +569,114 @@ body {
 }
 
 @keyframes fadeInOut {
-  0%, 100% { opacity: 0; }
-  10%, 90% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 1;
+  }
+}
+
+/* Settings Modal Specific Styles */
+#settingsForm .form-group label:has(input[type='checkbox']) {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: normal;
+  margin-bottom: 0;
+}
+
+#settingsForm input[type='checkbox'] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+#resetSettingsBtn {
+  background: #fff;
+  color: #666;
+  border-color: #dadce0;
+}
+
+#resetSettingsBtn:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+/* Dark Theme */
+.dark-theme {
+  --bg-color: #1a1a1a;
+  --text-color: #e0e0e0;
+  --border-color: #333;
+  --header-bg: #2a2a2a;
+  --sidebar-bg: #2a2a2a;
+  --content-bg: #1a1a1a;
+  --modal-bg: #2a2a2a;
+  --input-bg: #333;
+  --button-bg: #444;
+  --button-hover: #555;
+  --hover-bg: #333;
+}
+
+.dark-theme body {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.dark-theme .header,
+.dark-theme .footer {
+  background: var(--header-bg);
+  border-color: var(--border-color);
+}
+
+.dark-theme .sidebar,
+.dark-theme .content-area {
+  background: var(--content-bg);
+  border-color: var(--border-color);
+}
+
+.dark-theme .modal-content {
+  background: var(--modal-bg);
+  color: var(--text-color);
+}
+
+.dark-theme .folder-item,
+.dark-theme .subfolder-item {
+  border-color: var(--border-color);
+}
+
+.dark-theme .folder-item:hover,
+.dark-theme .subfolder-item:hover {
+  background: var(--hover-bg);
+}
+
+.dark-theme .prompt-item {
+  background: var(--content-bg);
+  border-color: var(--border-color);
+}
+
+.dark-theme .prompt-item:hover {
+  background: var(--hover-bg);
+}
+
+.dark-theme input,
+.dark-theme select,
+.dark-theme textarea {
+  background: var(--input-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.dark-theme .footer button {
+  background: var(--button-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.dark-theme .footer button:hover {
+  background: var(--button-hover);
 }
 
 /* Scrollbar */
