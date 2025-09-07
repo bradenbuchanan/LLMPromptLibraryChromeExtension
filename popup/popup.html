@@ -1,142 +1,240 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="popup.css">
-</head>
-<body>
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search prompts..." />
-        <button id="searchBtn">🔍</button>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search prompts..." />
+          <button id="searchBtn">🔍</button>
+        </div>
+        <button id="settingsBtn" title="Settings">⚙️</button>
       </div>
-      <button id="settingsBtn" title="Settings">⚙️</button>
-    </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="folder-tree">
-          <!-- Folder tree will be dynamically rendered by JavaScript -->
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <div class="folder-tree">
+            <!-- Folder tree will be dynamically rendered by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Prompt List -->
+        <div class="content-area">
+          <div class="content-header">
+            <h3 id="currentFolder">All Prompts</h3>
+            <div class="header-actions">
+              <button
+                id="deleteFolderBtn"
+                title="Delete current folder"
+                style="display: none"
+              >
+                🗑️
+              </button>
+              <button id="addPromptBtn" title="Add new prompt">➕</button>
+            </div>
+          </div>
+          <div class="prompt-list" id="promptList">
+            <div class="empty-state" id="emptyState">
+              <p>No prompts found. Add your first prompt to get started!</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Prompt List -->
-      <div class="content-area">
-        <div class="content-header">
-          <h3 id="currentFolder">All Prompts</h3>
-          <div class="header-actions">
-            <button id="deleteFolderBtn" title="Delete current folder" style="display: none;">🗑️</button>
-            <button id="addPromptBtn" title="Add new prompt">➕</button>
-          </div>
+      <!-- Footer -->
+      <div class="footer">
+        <button id="importBtn">Import</button>
+        <button id="exportBtn">Export</button>
+      </div>
+    </div>
+
+    <!-- Add/Edit Prompt Modal -->
+    <div class="modal" id="promptModal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add New Prompt</h3>
+          <button id="closeModal">✕</button>
         </div>
-        <div class="prompt-list" id="promptList">
-          <div class="empty-state" id="emptyState">
-            <p>No prompts found. Add your first prompt to get started!</p>
-          </div>
+        <div class="modal-body">
+          <form id="promptForm">
+            <div class="form-group">
+              <label for="promptTitle">Title:</label>
+              <input type="text" id="promptTitle" required maxlength="100" />
+            </div>
+            <div class="form-group">
+              <label for="promptDescription">Description:</label>
+              <input type="text" id="promptDescription" maxlength="200" />
+            </div>
+            <div class="form-group">
+              <label for="promptCategory">Category:</label>
+              <select id="promptCategory">
+                <option value="programming">Programming</option>
+                <option value="programming/code-review">
+                  Programming > Code Review
+                </option>
+                <option value="programming/debugging">
+                  Programming > Debugging
+                </option>
+                <option value="programming/documentation">
+                  Programming > Documentation
+                </option>
+                <option value="business">Business</option>
+                <option value="business/emails">
+                  Business > Email Templates
+                </option>
+                <option value="business/proposals">Business > Proposals</option>
+                <option value="personal">Personal</option>
+                <option value="creative">Creative</option>
+                <option value="research">Research</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="promptContent">Prompt Content:</label>
+              <textarea
+                id="promptContent"
+                required
+                rows="8"
+                maxlength="5000"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="promptTags">Tags (comma-separated):</label>
+              <input
+                type="text"
+                id="promptTags"
+                placeholder="e.g., review, quality, javascript"
+              />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelBtn">Cancel</button>
+          <button id="saveBtn">Save</button>
         </div>
       </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-      <button id="importBtn">Import</button>
-      <button id="exportBtn">Export</button>
-    </div>
-  </div>
-
-  <!-- Add/Edit Prompt Modal -->
-  <div class="modal" id="promptModal" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modalTitle">Add New Prompt</h3>
-        <button id="closeModal">✕</button>
-      </div>
-      <div class="modal-body">
-        <form id="promptForm">
-          <div class="form-group">
-            <label for="promptTitle">Title:</label>
-            <input type="text" id="promptTitle" required maxlength="100">
-          </div>
-          <div class="form-group">
-            <label for="promptDescription">Description:</label>
-            <input type="text" id="promptDescription" maxlength="200">
-          </div>
-          <div class="form-group">
-            <label for="promptCategory">Category:</label>
-            <select id="promptCategory">
-              <option value="programming">Programming</option>
-              <option value="programming/code-review">Programming > Code Review</option>
-              <option value="programming/debugging">Programming > Debugging</option>
-              <option value="programming/documentation">Programming > Documentation</option>
-              <option value="business">Business</option>
-              <option value="business/emails">Business > Email Templates</option>
-              <option value="business/proposals">Business > Proposals</option>
-              <option value="personal">Personal</option>
-              <option value="creative">Creative</option>
-              <option value="research">Research</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="promptContent">Prompt Content:</label>
-            <textarea id="promptContent" required rows="8" maxlength="5000"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="promptTags">Tags (comma-separated):</label>
-            <input type="text" id="promptTags" placeholder="e.g., review, quality, javascript">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button id="cancelBtn">Cancel</button>
-        <button id="saveBtn">Save</button>
+    <!-- Add/Edit Folder Modal -->
+    <div class="modal" id="folderModal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="folderModalTitle">Add New Folder</h3>
+          <button id="closeFolderModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <form id="folderForm">
+            <div class="form-group">
+              <label for="folderName">Folder Name:</label>
+              <input type="text" id="folderName" required maxlength="50" />
+            </div>
+            <div class="form-group">
+              <label for="folderIcon">Icon:</label>
+              <input
+                type="text"
+                id="folderIcon"
+                maxlength="2"
+                placeholder="📁"
+              />
+            </div>
+            <div
+              class="form-group"
+              id="parentFolderGroup"
+              style="display: none"
+            >
+              <label for="parentFolder">Parent Folder:</label>
+              <select id="parentFolder"></select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelFolderBtn">Cancel</button>
+          <button id="saveFolderBtn">Save</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Add/Edit Folder Modal -->
-  <div class="modal" id="folderModal" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="folderModalTitle">Add New Folder</h3>
-        <button id="closeFolderModal">✕</button>
-      </div>
-      <div class="modal-body">
-        <form id="folderForm">
-          <div class="form-group">
-            <label for="folderName">Folder Name:</label>
-            <input type="text" id="folderName" required maxlength="50">
-          </div>
-          <div class="form-group">
-            <label for="folderIcon">Icon:</label>
-            <input type="text" id="folderIcon" maxlength="2" placeholder="📁">
-          </div>
-          <div class="form-group" id="parentFolderGroup" style="display: none;">
-            <label for="parentFolder">Parent Folder:</label>
-            <select id="parentFolder"></select>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button id="cancelFolderBtn">Cancel</button>
-        <button id="saveFolderBtn">Save</button>
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Settings</h3>
+          <button id="closeSettingsModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <form id="settingsForm">
+            <div class="form-group">
+              <label for="defaultFolder">Default Folder:</label>
+              <select id="defaultFolder">
+                <option value="all">All Prompts</option>
+                <option value="favorites">Favorites</option>
+                <option value="programming">Programming</option>
+                <option value="business">Business</option>
+                <option value="personal">Personal</option>
+                <option value="creative">Creative</option>
+                <option value="research">Research</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="theme">Theme:</label>
+              <select id="theme">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="auto">Auto (System)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="autoSave">Auto-save:</label>
+              <select id="autoSave">
+                <option value="immediate">Immediate</option>
+                <option value="onClose">On Close</option>
+                <option value="manual">Manual Only</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exportFormat">Default Export Format:</label>
+              <select id="exportFormat">
+                <option value="json">JSON</option>
+                <option value="csv">CSV</option>
+                <option value="txt">Plain Text</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="showDescriptions" /> Show prompt
+                descriptions in list
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="showTags" /> Show tags in list
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="resetSettingsBtn">Reset to Defaults</button>
+          <button id="cancelSettingsBtn">Cancel</button>
+          <button id="saveSettingsBtn">Save</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Success Toast -->
-  <div class="toast" id="toast" style="display: none;">
-    <span id="toastMessage">Copied to clipboard!</span>
-  </div>
+    <!-- Success Toast -->
+    <div class="toast" id="toast" style="display: none">
+      <span id="toastMessage">Copied to clipboard!</span>
+    </div>
 
-  <script src="defaultData.js"></script>
-  <script src="storage.js"></script>
-  <script src="promptManager.js"></script>
-  <script src="folderManager.js"></script>
-  <script src="ui.js"></script>
-  <script src="app.js"></script>
-</body>
+    <script src="defaultData.js"></script>
+    <script src="storage.js"></script>
+    <script src="promptManager.js"></script>
+    <script src="folderManager.js"></script>
+    <script src="ui.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
