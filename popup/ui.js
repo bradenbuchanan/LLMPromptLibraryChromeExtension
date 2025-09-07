@@ -353,7 +353,12 @@ class UI {
     }
   }
 
-  static openFolderModal(mode, parentFolderId = null, folders = {}) {
+  static openFolderModal(
+    mode,
+    parentFolderId = null,
+    folders = {},
+    folderId = null
+  ) {
     const modal = document.getElementById('folderModal');
     const title = document.getElementById('folderModalTitle');
     const parentGroup = document.getElementById('parentFolderGroup');
@@ -383,6 +388,12 @@ class UI {
 
       document.getElementById('folderName').value = '';
       document.getElementById('folderIcon').value = '📁';
+    } else if (mode === 'edit' && folderId) {
+      title.textContent = 'Edit Folder';
+      parentGroup.style.display = 'none'; // Can't change parent
+      const folder = folders[folderId];
+      document.getElementById('folderName').value = folder.name;
+      document.getElementById('folderIcon').value = folder.icon;
     }
 
     modal.style.display = 'flex';
