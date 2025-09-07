@@ -244,8 +244,9 @@ class AppController {
       this.importPrompts();
     });
 
-    document.addEventListener('exportRequested', () => {
-      this.exportPrompts();
+    document.addEventListener('exportRequested', (e) => {
+      const format = e.detail?.format || 'json';
+      this.exportPrompts(format);
     });
   }
 
@@ -456,8 +457,8 @@ class AppController {
     input.click();
   }
 
-  exportPrompts() {
-    this.stateManager.exportPrompts();
+  exportPrompts(format = 'json') {
+    this.stateManager.exportPrompts(format);
   }
 
   // Error handling

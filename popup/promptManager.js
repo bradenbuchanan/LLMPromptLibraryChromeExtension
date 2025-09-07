@@ -154,27 +154,105 @@ class PromptManager {
     }
   }
 
-  static exportPrompts(prompts) {
+  static exportPrompts(prompts, format = 'json') {
+    const timestamp = new Date().toISOString().split('T')[0];
+    let content, mimeType, filename;
+
+    switch (format.toLowerCase()) {
+      case 'csv':
+        content = this.exportAsCSV(prompts);
+        mimeType = 'text/csv';
+        filename = `prompt-library-${timestamp}.csv`;
+        break;
+      case 'txt':
+        content = this.exportAsTXT(prompts);
+        mimeType = 'text/plain';
+        filename = `prompt-library-${timestamp}.txt`;
+        break;
+      case 'json':
+      default:
+        content = this.exportAsJSON(prompts);
+        mimeType = 'application/json';
+        filename = `prompt-library-${timestamp}.json`;
+        break;
+    }
+
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(url);
+    return true;
+  }
+
+  static exportAsJSON(prompts) {
     const exportData = {
       prompts: prompts,
       exported: new Date().toISOString(),
       version: '1.0',
     };
+    return JSON.stringify(exportData, null, 2);
+  }
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-      type: 'application/json',
+  static exportAsCSV(prompts) {
+    const headers = ['Title', 'Description', 'Category', 'Tags', 'Favorite', 'Content', 'Created', 'Last Used'];
+    const csvContent = [headers.join(',')];
+
+    prompts.forEach(prompt => {
+      const row = [
+        `"${(prompt.title || '').replace(/"/g, '""')}"`,
+        `"${(prompt.description || '').replace(/"/g, '""')}"`,
+        `"${prompt.category || ''}"`,
+        `"${(prompt.tags || []).join('; ')}"`,
+        prompt.favorite ? 'Yes' : 'No',
+        `"${(prompt.content || '').replace(/"/g, '""')}"`,
+        prompt.created || '',
+        prompt.lastUsed || ''
+      ];
+      csvContent.push(row.join(','));
     });
-    const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `prompt-library-${
-      new Date().toISOString().split('T')[0]
-    }.json`;
-    a.click();
+    return csvContent.join('\n');
+  }
 
-    URL.revokeObjectURL(url);
-    return true;
+  static exportAsTXT(prompts) {
+    const lines = [
+      'LLM Prompt Library Export',
+      `Exported: ${new Date().toISOString()}`,
+      `Total Prompts: ${prompts.length}`,
+      '=' .repeat(50),
+      ''
+    ];
+
+    prompts.forEach((prompt, index) => {
+      lines.push(`${index + 1}. ${prompt.title || 'Untitled'}`);
+      lines.push(`Category: ${prompt.category || 'Uncategorized'}`);
+      
+      if (prompt.description) {
+        lines.push(`Description: ${prompt.description}`);
+      }
+      
+      if (prompt.tags && prompt.tags.length > 0) {
+        lines.push(`Tags: ${prompt.tags.join(', ')}`);
+      }
+      
+      if (prompt.favorite) {
+        lines.push('⭐ Favorite');
+      }
+      
+      lines.push('');
+      lines.push('Content:');
+      lines.push(prompt.content || '');
+      lines.push('');
+      lines.push('-'.repeat(30));
+      lines.push('');
+    });
+
+    return lines.join('\n');
   }
 
   static filterPrompts(prompts, folders, currentFolder, searchQuery = '') {

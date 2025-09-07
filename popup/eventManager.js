@@ -236,6 +236,29 @@ class EventManager {
       settingsForm.addEventListener('submit', submitHandler);
       this.addEventHandler('settings-form-submit', settingsForm, 'submit', submitHandler);
     }
+
+    // Export buttons in settings
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const exportTxtBtn = document.getElementById('exportTxtBtn');
+
+    if (exportJsonBtn) {
+      const jsonHandler = () => this.emit('exportRequested', { format: 'json' });
+      exportJsonBtn.addEventListener('click', jsonHandler);
+      this.addEventHandler('export-json', exportJsonBtn, 'click', jsonHandler);
+    }
+
+    if (exportCsvBtn) {
+      const csvHandler = () => this.emit('exportRequested', { format: 'csv' });
+      exportCsvBtn.addEventListener('click', csvHandler);
+      this.addEventHandler('export-csv', exportCsvBtn, 'click', csvHandler);
+    }
+
+    if (exportTxtBtn) {
+      const txtHandler = () => this.emit('exportRequested', { format: 'txt' });
+      exportTxtBtn.addEventListener('click', txtHandler);
+      this.addEventHandler('export-txt', exportTxtBtn, 'click', txtHandler);
+    }
   }
 
   // Import/Export events

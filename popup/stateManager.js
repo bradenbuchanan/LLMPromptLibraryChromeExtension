@@ -263,10 +263,10 @@ class StateManager {
     return result;
   }
 
-  exportPrompts() {
-    const success = PromptManager.exportPrompts(this.prompts);
+  exportPrompts(format = 'json') {
+    const success = PromptManager.exportPrompts(this.prompts, format);
     if (success) {
-      this.emit('promptsExported');
+      this.emit('promptsExported', { format });
     }
     return success;
   }
