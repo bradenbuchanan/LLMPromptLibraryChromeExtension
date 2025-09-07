@@ -400,4 +400,37 @@ class UI {
       parent: document.getElementById('parentFolder').value || null,
     };
   }
+
+  static openSettingsModal(settings) {
+    const modal = document.getElementById('settingsModal');
+
+    // Populate form with current settings
+    document.getElementById('defaultFolder').value =
+      settings.defaultFolder || 'programming';
+    document.getElementById('theme').value = settings.theme || 'light';
+    document.getElementById('autoSave').value =
+      settings.autoSave || 'immediate';
+    document.getElementById('exportFormat').value =
+      settings.exportFormat || 'json';
+    document.getElementById('showDescriptions').checked =
+      settings.showDescriptions !== false;
+    document.getElementById('showTags').checked = settings.showTags !== false;
+
+    modal.style.display = 'flex';
+  }
+
+  static closeSettingsModal() {
+    document.getElementById('settingsModal').style.display = 'none';
+  }
+
+  static getSettingsFormData() {
+    return {
+      defaultFolder: document.getElementById('defaultFolder').value,
+      theme: document.getElementById('theme').value,
+      autoSave: document.getElementById('autoSave').value,
+      exportFormat: document.getElementById('exportFormat').value,
+      showDescriptions: document.getElementById('showDescriptions').checked,
+      showTags: document.getElementById('showTags').checked,
+    };
+  }
 }
