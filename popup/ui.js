@@ -180,7 +180,7 @@ class UI {
     }
   }
 
-  static displayPrompts(prompts, onPromptAction) {
+  static displayPrompts(prompts) {
     const promptList = document.getElementById('promptList');
     const emptyState = document.getElementById('emptyState');
 
@@ -206,12 +206,12 @@ class UI {
 
     // Create prompt elements
     prompts.forEach((prompt) => {
-      const promptElement = this.createPromptElement(prompt, onPromptAction);
+      const promptElement = this.createPromptElement(prompt);
       promptList.appendChild(promptElement);
     });
   }
 
-  static createPromptElement(prompt, onPromptAction) {
+  static createPromptElement(prompt) {
     const div = document.createElement('div');
     div.className = 'prompt-item';
     div.setAttribute('data-prompt-id', prompt.id);
@@ -238,17 +238,7 @@ class UI {
             <div class="prompt-tags">${tags}</div>
         `;
 
-    // Add click handler
-    div.addEventListener('click', function (e) {
-      const action = e.target.getAttribute('data-action');
-
-      if (action) {
-        onPromptAction(action, prompt.id);
-      } else if (!e.target.closest('.prompt-actions')) {
-        // Click on prompt item (not actions) - copy prompt
-        onPromptAction('copy', prompt.id);
-      }
-    });
+    // Note: Click events are handled by EventManager's setupPromptListEvents
 
     return div;
   }
