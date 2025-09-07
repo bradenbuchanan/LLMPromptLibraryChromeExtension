@@ -108,8 +108,40 @@ class FolderManager {
   }
 
   static editFolder(folders, folderId, folderData) {
-    // Placeholder for folder editing logic
-    // TODO: Implement folder editing
-    return folders;
+    if (!folders[folderId]) {
+      throw new Error('Folder not found!');
+    }
+
+    // Prevent editing system folders
+    const systemFolders = [
+      'favorites',
+      'programming',
+      'business',
+      'personal',
+      'creative',
+      'research',
+    ];
+    if (systemFolders.includes(folderId)) {
+      throw new Error('System folders cannot be edited!');
+    }
+
+    // Check if new name conflicts with existing folder
+    const newFolderId = folderData.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-');
+    if (folders[newFolderId] && newFolderId !== folderId) {
+      throw new Error('A folder with this name already exists!');
+    }
+
+    const newFolders = { ...folders };
+
+    // Update the folder
+    newFolders[folderId] = {
+      ...newFolders[folderId],
+      name: folderData.name,
+      icon: folderData.icon || '📁',
+    };
+
+    return newFolders;
   }
 }
