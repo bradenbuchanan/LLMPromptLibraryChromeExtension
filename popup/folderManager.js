@@ -77,8 +77,22 @@ class FolderManager {
   }
 
   static createFolder(folders, folderData) {
-    // Generate unique ID
-    let folderId = folderData.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    // Validate folder name
+    const nameValidation = ValidationUtils.validateFolderName(folderData.name);
+    if (!nameValidation.valid) {
+      throw new Error(nameValidation.error);
+    }
+
+    // Validate icon
+    const iconValidation = ValidationUtils.validateIcon(folderData.icon);
+    if (!iconValidation.valid) {
+      throw new Error(iconValidation.error);
+    }
+
+    // Generate unique ID from sanitized name
+    let folderId = nameValidation.sanitized
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-');
     if (folderData.parent) {
       folderId = `${folderData.parent}/${folderId}`;
     }
@@ -90,11 +104,11 @@ class FolderManager {
 
     const newFolders = { ...folders };
 
-    // Create the new folder
+    // Create the new folder with validated data
     newFolders[folderId] = {
       id: folderId,
-      name: folderData.name,
-      icon: folderData.icon || '📁',
+      name: nameValidation.sanitized,
+      icon: iconValidation.icon,
       parent: folderData.parent || null,
       subfolders: [],
     };
@@ -125,8 +139,20 @@ class FolderManager {
       throw new Error('System folders cannot be edited!');
     }
 
+    // Validate folder name
+    const nameValidation = ValidationUtils.validateFolderName(folderData.name);
+    if (!nameValidation.valid) {
+      throw new Error(nameValidation.error);
+    }
+
+    // Validate icon
+    const iconValidation = ValidationUtils.validateIcon(folderData.icon);
+    if (!iconValidation.valid) {
+      throw new Error(iconValidation.error);
+    }
+
     // Check if new name conflicts with existing folder
-    const newFolderId = folderData.name
+    const newFolderId = nameValidation.sanitized
       .toLowerCase()
       .replace(/[^a-z0-9]/g, '-');
     if (folders[newFolderId] && newFolderId !== folderId) {
@@ -135,11 +161,11 @@ class FolderManager {
 
     const newFolders = { ...folders };
 
-    // Update the folder
+    // Update the folder with validated data
     newFolders[folderId] = {
       ...newFolders[folderId],
-      name: folderData.name,
-      icon: folderData.icon || '📁',
+      name: nameValidation.sanitized,
+      icon: iconValidation.icon,
     };
 
     return newFolders;

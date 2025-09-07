@@ -1,22 +1,32 @@
 // Prompt management operations
 class PromptManager {
   static copyPrompt(prompt) {
+    // Validate prompt data before copying
+    if (!prompt || !prompt.content) {
+      console.error('Invalid prompt data for copying');
+      return Promise.resolve(false);
+    }
+
+    // Ensure content is safe (though it should already be sanitized)
+    const safeContent = ValidationUtils.sanitizeContent(prompt.content);
+
     // Copy to clipboard
     if (navigator.clipboard && navigator.clipboard.writeText) {
       return navigator.clipboard
-        .writeText(prompt.content)
+        .writeText(safeContent)
         .then(function () {
           prompt.lastUsed = new Date().toISOString();
           return true;
         })
         .catch(function (error) {
+          console.error('Clipboard write failed:', error);
           return false;
         });
     } else {
       // Fallback
       return new Promise((resolve) => {
         const textArea = document.createElement('textarea');
-        textArea.value = prompt.content;
+        textArea.value = safeContent;
         document.body.appendChild(textArea);
         textArea.select();
 
@@ -60,18 +70,13 @@ class PromptManager {
   }
 
   static savePrompt(prompts, promptData, editingPromptId = null) {
-    const { title, description, category, content, tags } = promptData;
-
-    if (!title || !content) {
-      throw new Error('Title and content are required!');
+    // Use comprehensive validation
+    const validation = ValidationUtils.validatePromptData(promptData);
+    if (!validation.valid) {
+      throw new Error(validation.error);
     }
 
-    const processedTags = tags
-      ? tags
-          .split(',')
-          .map((tag) => tag.trim())
-          .filter((tag) => tag)
-      : [];
+    const { title, description, category, content, tags } = validation.data;
 
     if (editingPromptId) {
       // Edit existing
@@ -81,7 +86,7 @@ class PromptManager {
         prompt.description = description;
         prompt.category = category;
         prompt.content = content;
-        prompt.tags = processedTags;
+        prompt.tags = tags;
 
         return { prompts, isNew: false };
       }
@@ -97,7 +102,7 @@ class PromptManager {
         description,
         content,
         category,
-        tags: processedTags,
+        tags: tags,
         favorite: false,
         created: new Date().toISOString(),
         lastUsed: null,
@@ -112,31 +117,39 @@ class PromptManager {
 
   static importPrompts(currentPrompts, fileContent) {
     try {
-      const data = JSON.parse(fileContent);
-
-      if (data.prompts && Array.isArray(data.prompts)) {
-        const importedPrompts = data.prompts.map((prompt) => ({
-          ...prompt,
-          id:
-            'imported_' +
-            Date.now() +
-            '_' +
-            Math.random().toString(36).substr(2, 9),
-        }));
-
-        const newPrompts = [...currentPrompts, ...importedPrompts];
+      // First validate the JSON structure and content
+      const validation = ValidationUtils.validateImportData(
+        JSON.parse(fileContent)
+      );
+      if (!validation.valid) {
         return {
-          success: true,
-          prompts: newPrompts,
-          count: importedPrompts.length,
+          success: false,
+          error: validation.error,
         };
-      } else {
-        throw new Error('Invalid file format');
       }
+
+      const data = validation.data;
+
+      // Process validated prompts
+      const importedPrompts = data.prompts.map((prompt) => ({
+        ...prompt,
+        id:
+          'imported_' +
+          Date.now() +
+          '_' +
+          Math.random().toString(36).substr(2, 9),
+      }));
+
+      const newPrompts = [...currentPrompts, ...importedPrompts];
+      return {
+        success: true,
+        prompts: newPrompts,
+        count: importedPrompts.length,
+      };
     } catch (error) {
       return {
         success: false,
-        error: 'Error importing file. Please check the format.',
+        error: 'Error importing file: ' + error.message,
       };
     }
   }
