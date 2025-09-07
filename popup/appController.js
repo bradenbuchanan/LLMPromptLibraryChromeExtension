@@ -267,7 +267,7 @@ class AppController {
 
   renderPrompts() {
     const filteredPrompts = this.stateManager.getFilteredPrompts();
-    UI.displayPrompts(filteredPrompts, () => {}); // Event handling is managed by EventManager
+    UI.displayPrompts(filteredPrompts); // Event handling is managed by EventManager
     
     // Refresh dynamic events after render
     this.eventManager.refreshDynamicEvents();
