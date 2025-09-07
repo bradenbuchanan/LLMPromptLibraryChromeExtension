@@ -3,6 +3,7 @@ class App {
   constructor() {
     this.prompts = [];
     this.folders = {};
+    this.settings = {};
     this.currentFolder = 'programming';
     this.editingPromptId = null;
     this.searchQuery = '';
@@ -11,15 +12,26 @@ class App {
   async init() {
     await this.loadData();
     this.setupEventListeners();
+    this.applySettings();
     this.render();
   }
 
   async loadData() {
     try {
-      const { prompts, folders, shouldSave } = await StorageManager.load();
+      const { prompts, folders, settings, shouldSave } =
+        await StorageManager.load();
 
       this.prompts = prompts;
       this.folders = folders;
+      this.settings = settings;
+
+      // Set default folder from settings
+      if (
+        this.settings.defaultFolder &&
+        this.settings.defaultFolder !== 'programming'
+      ) {
+        this.currentFolder = this.settings.defaultFolder;
+      }
 
       if (shouldSave) {
         this.saveData();
@@ -27,11 +39,12 @@ class App {
     } catch (error) {
       this.prompts = DefaultData.getPrompts();
       this.folders = DefaultData.getFolders();
+      this.settings = StorageManager.getDefaultSettings();
     }
   }
 
   saveData() {
-    StorageManager.save(this.prompts, this.folders);
+    StorageManager.save(this.prompts, this.folders, this.settings);
   }
 
   render() {
@@ -281,6 +294,43 @@ class App {
     UI.showToast('Prompts exported!');
   }
 
+  openSettingsModal() {
+    UI.openSettingsModal(this.settings);
+  }
+
+  saveSettings() {
+    const formData = UI.getSettingsFormData();
+    this.settings = { ...this.settings, ...formData };
+    StorageManager.saveSettings(this.settings);
+    UI.closeSettingsModal();
+    UI.showToast('Settings saved!');
+
+    // Apply settings that affect the UI immediately
+    this.applySettings();
+  }
+
+  resetSettings() {
+    this.settings = StorageManager.getDefaultSettings();
+    StorageManager.saveSettings(this.settings);
+    UI.openSettingsModal(this.settings);
+    UI.showToast('Settings reset to defaults!');
+  }
+
+  applySettings() {
+    // Apply theme
+    if (this.settings.theme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+
+    // Apply default folder
+    if (this.settings.defaultFolder && this.currentFolder === 'programming') {
+      this.currentFolder = this.settings.defaultFolder;
+      this.render();
+    }
+  }
+
   setupEventListeners() {
     // Search
     const searchInput = document.getElementById('searchInput');
@@ -359,6 +409,49 @@ class App {
       folderForm.addEventListener('submit', (e) => {
         e.preventDefault();
         this.saveFolder();
+      });
+    }
+
+    // Settings
+    const settingsBtn = document.getElementById('settingsBtn');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        this.openSettingsModal();
+      });
+    }
+
+    // Settings modal controls
+    const closeSettingsBtn = document.getElementById('closeSettingsModal');
+    const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+    if (closeSettingsBtn)
+      closeSettingsBtn.addEventListener('click', () => UI.closeSettingsModal());
+    if (cancelSettingsBtn)
+      cancelSettingsBtn.addEventListener('click', () =>
+        UI.closeSettingsModal()
+      );
+
+    // Save settings button
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    if (saveSettingsBtn) {
+      saveSettingsBtn.addEventListener('click', () => {
+        this.saveSettings();
+      });
+    }
+
+    // Reset settings button
+    const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+    if (resetSettingsBtn) {
+      resetSettingsBtn.addEventListener('click', () => {
+        this.resetSettings();
+      });
+    }
+
+    // Settings form submit
+    const settingsForm = document.getElementById('settingsForm');
+    if (settingsForm) {
+      settingsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.saveSettings();
       });
     }
   }
