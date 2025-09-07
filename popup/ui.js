@@ -244,8 +244,8 @@ class UI {
 
       if (action) {
         onPromptAction(action, prompt.id);
-      } else if (!e.target.classList.contains('action-btn') && !e.target.closest('.action-btn')) {
-        // Click anywhere on prompt item except action buttons - copy prompt
+      } else if (!e.target.closest('.prompt-actions')) {
+        // Click on prompt item (not actions) - copy prompt
         onPromptAction('copy', prompt.id);
       }
     });
