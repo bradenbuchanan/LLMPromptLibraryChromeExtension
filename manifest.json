@@ -3,7 +3,9 @@
   "name": "LLM Prompt Library",
   "version": "1.0.0",
   "description": "Organize and quickly copy pre-written prompts for LLM interfaces",
-  
+  "author": "Braden Buchanan",
+  "homepage_url": "https://github.com/bradenbuchanan/LLMPromptLibraryChromeExtension",
+
   "permissions": [
     "storage"
   ],
